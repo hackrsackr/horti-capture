@@ -206,6 +206,11 @@ def sendTimelapse(cfg: object, timestamp: str) -> str:
         sendEmail(cfg, video_file, timestamp)
 
 
+def run() -> None:
+    timestamp = getTimestamp()
+    sendTimelapse(cfg, timestamp)
+
+
 if __name__ == "__main__":
     cfg: object = loadConfig()
     timestamp: str = getTimestamp()

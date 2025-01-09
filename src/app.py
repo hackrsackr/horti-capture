@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import json
 
-# from schedule import repeat, every, run_pending
+from schedule import repeat, every, run_pending
 from flask import Flask, render_template, request
 
 import timelapse
@@ -12,6 +12,12 @@ app = Flask(__name__)
 with open("config.json", "r") as f:
     cfg = json.load(f)
     context = dict(cfg["variable"])
+
+
+@repeat(every().day.at(context["start_time"]))
+def run():
+    timestamp = timelapse.getTimestamp()
+    timelapse.sendTimelapse(cfg, timestamp)
 
 
 @app.route("/")
@@ -35,8 +41,8 @@ def handle_request():
 
     cfg["variable"] = context
 
-    timestamp = timelapse.getTimestamp()
-    timelapse.sendTimelapse(cfg, timestamp)
+    print(f"cfg: {cfg['variable']}")
+    print(f"context: {context}")
 
     return render_template("index.html", context=context)
 
