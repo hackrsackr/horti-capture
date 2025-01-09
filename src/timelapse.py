@@ -217,7 +217,7 @@ if __name__ == "__main__":
     send_email: bool = cfg["send_email"]
     debug: bool = cfg["debug"]
 
-    takePictures(timestamp)
+    takePictures(cfg, timestamp)
 
     if make_video:
         input_pattern: str = f"{album_name}/images/image*.jpg"
