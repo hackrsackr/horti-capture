@@ -1,0 +1,21 @@
+{
+    "variable": {
+        "number_of_photos": 3,
+        "secs_between_photos": 5,
+        "frames_per_second": 27,
+        "start_time": "06:00"
+    },
+    "mp4_name": "timelapse.mp4",
+    "mail_server": "smtp.gmail.com",
+    "output_folder": "timelapses",
+    "from_addr": "rob.knighton10@gmail.com",
+    "to_addrs": [
+        "rob.knighton10@gmail.com"
+    ],
+    "subject": "Timelapse",
+    "app_password": "hdhh fjfi aich pwim",
+    "show_preview": false,
+    "convert_to_video": true,
+    "send_email": true,
+    "debug": false
+}
