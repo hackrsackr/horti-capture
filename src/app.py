@@ -8,31 +8,6 @@ import timelapse
 
 app = Flask(__name__)
 
-
-def job():
-    timestamp = timelapse.getTimestamp()
-    timelapse.sendTimelapse(cfg, timestamp)
-
-
-def updateStartTime(time: str):
-    time_parts = time.split(":")
-    hour = time_parts[0]
-    mins = time_parts[1]
-    print(f"New start time is {hour}:{mins}")
-
-    return hour, mins
-
-
-def updateScheduledJob(id: str):
-    # time = context["start_time"]
-    time_parts = context["start_time"].split(":")
-    scheduler.remove_job(id=id)
-    print("job removed")
-    hour, mins = time_parts[0], time_parts[1]
-    scheduler.add_job("id", func=job, trigger="cron", hour=hour, minute=mins)
-    print(f"Job restarted with start time of {hour}:{mins}")
-
-
 with open("config.json", "r") as f:
     cfg = json.load(f)
     context = dict(cfg["variable"])
@@ -47,6 +22,22 @@ app.config.from_object(Config())
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
+
+
+def job():
+    """Job to be run at scheduled time"""
+    timestamp = timelapse.getTimestamp()
+    timelapse.sendTimelapse(cfg, timestamp)
+
+
+def updateScheduledJob(id: str) -> None:
+    """Change the starting time of script from the server input"""
+    scheduler.remove_job(id=id)
+    time_parts = context["start_time"].split(":")
+    hour, mins = time_parts[0], time_parts[1]
+    scheduler.add_job("id", func=job, trigger="cron", hour=hour, minute=mins)
+    print(f"Job restarted with start time of {hour}:{mins}")
+
 
 start_hour = context["start_time"].split(":")[0]
 start_mins = context["start_time"].split(":")[1]

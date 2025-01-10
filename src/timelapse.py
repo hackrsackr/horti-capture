@@ -23,9 +23,6 @@ def loadConfig() -> object:
     return cfg
 
 
-# from schedule import repeat, every, run_pending
-
-
 def updateConfig(vars: object) -> object:
     cfg["variables"] = vars
 
