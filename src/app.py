@@ -37,8 +37,9 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-start_hour = context["start_time"].split(":")[0]
-start_mins = context["start_time"].split(":")[1]
+start_time = context["start_time"]
+start_hour = start_time.split(":")[0]
+start_mins = start_time.split(":")[1]
 
 scheduler.add_job("job", func=job, trigger="cron", hour=start_hour, minute=start_mins)
 
@@ -60,6 +61,7 @@ def handle_request():
                 context[key] = request.args.get(key)
 
     cfg["server_settings"] = context
+    print(json.dumps(context, indent=4))
 
     updateScheduledJob(id="job")
 
