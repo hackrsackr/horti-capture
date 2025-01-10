@@ -10,19 +10,11 @@ app = Flask(__name__)
 
 with open("config.json", "r") as f:
     cfg = json.load(f)
-    context = dict(cfg["variable"])
+    context = dict(cfg["server_settings"])
 
 
 class Config:
     SCHEDULER_API_ENABLED = True
-
-
-app.config.from_object(Config())
-
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-
 
 def job():
     """Job to be run at scheduled time"""
@@ -35,21 +27,23 @@ def updateScheduledJob(id: str) -> None:
     scheduler.remove_job(id=id)
     time_parts = context["start_time"].split(":")
     hour, mins = time_parts[0], time_parts[1]
-    scheduler.add_job("id", func=job, trigger="cron", hour=hour, minute=mins)
+    scheduler.add_job(id=id, func=job, trigger="cron", hour=hour, minute=mins)
     print(f"Job restarted with start time of {hour}:{mins}")
 
+
+app.config.from_object(Config())
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 start_hour = context["start_time"].split(":")[0]
 start_mins = context["start_time"].split(":")[1]
 
 scheduler.add_job("job", func=job, trigger="cron", hour=start_hour, minute=start_mins)
 
-
 @app.route("/")
 def view_form():
-    print(f"cfg: {cfg['variable']}")
-    print(f"context: {context}")
-    print("job started")
     return render_template("index.html", context=context)
 
 
@@ -65,7 +59,7 @@ def handle_request():
             if request.args.get(key):
                 context[key] = request.args.get(key)
 
-    cfg["variable"] = context
+    cfg["server_settings"] = context
 
     updateScheduledJob(id="job")
 
@@ -73,4 +67,4 @@ def handle_request():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port="5000", debug=cfg["general_settings"]["DEBUG"])

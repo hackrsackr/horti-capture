@@ -1,28 +1,27 @@
 {
-    "variable": {
+    "server_settings": {
         "number_of_photos": 3,
         "secs_between_photos": 5,
         "frames_per_second": 27,
-        "start_time": "21:51"
+        "start_time": "00:00"
     },
-    "fixed": {
-        "video_settings": {
-            "mp4_name": "timelapse.mp4",
-            "mail_server": "smtp.gmail.com",
-            "output_folder": "./timelapses"
-        },
-        "mail_settings": {
-            "from_addr": "xxx@xxx.xxx",
-            "to_addrs": [
-                "xxx@xxx.xxx"
-            ],
-            "subject": "Timelapse",
-            "app_password": "xxxx xxxx xxxx xxxx"
-        },
-        "general_settings": {
-            "preview_on": false,
-            "convert_to_video": true,
-            "send_email": true
-        }
+    "video_settings": {
+        "mp4_name": "timelapse.mp4",
+        "output_folder": "./timelapses"
+    },
+    "mail_settings": {
+        "mail_server": "smtp.gmail.com",
+        "from_addr": "xxx@xxx.xxx",
+        "to_addrs": [
+            "xxx@xxx.xxx"
+        ],
+        "subject": "Timelapse",
+        "app_password": "xxxx xxxx xxxx xxxx"
+    },
+    "general_settings": {
+        "DEBUG": false,
+        "show_preview": false,
+        "convert_to_video": true,
+        "send_email": true
     }
 }

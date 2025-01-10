@@ -12,7 +12,7 @@ from picamera2 import Picamera2, Preview
 from PIL import Image, ImageDraw, ImageFont
 from smtplib import SMTP
 
-from BME280 import getTempAndHumidity
+from environment import getTempAndHumidity
 
 
 def loadConfig() -> object:
@@ -43,11 +43,11 @@ def getAlbumName(folder: str, subfolder: str) -> str:
     return album_name
 
 
-def setScriptTime(timestamp: str) -> str:
-    """Sets the time of script execution"""
-    script_time: str = timestamp
+# def setScriptTime(timestamp: str) -> str:
+#     """Sets the time of script execution"""
+#     script_time: str = timestamp
 
-    return script_time
+#     return script_time
 
 
 def drawText(path: str, font: object, fill: object) -> None:
@@ -56,8 +56,7 @@ def drawText(path: str, font: object, fill: object) -> None:
     draw: object = ImageDraw.Draw(img, mode="RGBA")
     os.remove(path)
 
-    # temperature, humidity = getTempAndHumidity()
-    temperature, humidity = 70, 65
+    temperature, humidity = getTempAndHumidity()
 
     draw.text((10, 420), time.strftime("%b_%d_%Y"), font=font, fill=fill)
     draw.text((10, 440), time.strftime("%H:%M:%S"), font=font, fill=fill)
@@ -71,10 +70,10 @@ def takePictures(cfg: object, timestamp: str) -> None:
     """Take Pictures for timelapse series"""
     # cfg = loadConfig()
 
-    output_dir: str = cfg["output_folder"]
-    photos: int = int(cfg["variable"]["number_of_photos"])
-    photo_delay: int = int(cfg["variable"]["secs_between_photos"])
-    show_preview: bool = cfg["show_preview"]
+    output_dir: str = cfg['video_settings']["output_folder"]
+    photos: int = int(cfg["server_settings"]["number_of_photos"])
+    photo_delay: int = int(cfg["server_settings"]["secs_between_photos"])
+    show_preview: bool = cfg['general_settings']["show_preview"]
 
     picam2: Picamera2 = Picamera2(tuning=Picamera2.load_tuning_file("imx477.json"))
     config: dict = picam2.create_preview_configuration(main={"size": (800, 600)})
@@ -141,13 +140,13 @@ def createVideo(
 
 def sendEmail(cfg: object, video_file: MIMEBase, timestamp: str) -> None:
     """Email video file"""
-    output_dir: str = cfg["output_folder"]
-    mp4_name: str = cfg["mp4_name"]
-    subject: str = cfg["subject"]
-    mail_sever: str = cfg["mail_server"]
-    app_pwd: str = cfg["app_password"]
-    from_addr: str = cfg["from_addr"]
-    to_addrs: list = cfg["to_addrs"]
+    output_dir: str = cfg["video_settings"]["output_folder"]
+    mp4_name: str = cfg["video_settings"]["mp4_name"]
+    subject: str = cfg["email_settings"]["subject"]
+    mail_sever: str = cfg["email_settings"]["mail_server"]
+    app_pwd: str = cfg["email_settings"]["app_password"]
+    from_addr: str = cfg["email_settings"]["from_addr"]
+    to_addrs: list = cfg["email_settings"]["to_addrs"]
 
     album_name: str = f"{output_dir}/{timestamp}/"
     mp4_path: str = f"{album_name}{mp4_name}"
@@ -187,11 +186,11 @@ def sendTimelapse(cfg: object, timestamp: str) -> str:
     Creates timelapse video file out of images
     Sends timelapse video by email
     """
-    fps: int = cfg["variable"]["frames_per_second"]
-    output_dir: str = cfg["output_folder"]
-    mp4_name: str = cfg["mp4_name"]
-    make_video: bool = cfg["convert_to_video"]
-    send_email: bool = cfg["send_email"]
+    fps: int = cfg["server_settings"]["frames_per_second"]
+    output_dir: str = cfg["video_settings"]["output_folder"]
+    mp4_name: str = cfg["video_settings"]["mp4_name"]
+    make_video: bool = cfg["general_settings"]["convert_to_video"]
+    send_email: bool = cfg["general_settings"]["send_email"]
     timestamp: str = timestamp
     album_name: str = f"{output_dir}/{timestamp}/"
     mp4_path: str = f"{album_name}{mp4_name}"
@@ -214,20 +213,20 @@ def run() -> None:
 if __name__ == "__main__":
     cfg: object = loadConfig()
     timestamp: str = getTimestamp()
-    output_dir: str = cfg["output_folder"]
-    mp4_name: str = cfg["mp4_name"]
+    output_dir: str = cfg["video_settings"]["output_folder"]
+    mp4_name: str = cfg["video_settings"]["mp4_name"]
     album_name: str = f"{output_dir}/{timestamp}/"
 
-    make_video: bool = cfg["convert_to_video"]
-    send_email: bool = cfg["send_email"]
-    debug: bool = cfg["debug"]
+    make_video: bool = cfg["general_settings"]["convert_to_video"]
+    send_email: bool = cfg["general_settings"]["send_email"]
+    debug: bool = cfg["general_settings"]["DEBUG"]
 
     takePictures(cfg, timestamp)
 
     if make_video:
         input_pattern: str = f"{album_name}/images/image*.jpg"
         output_file: str = f"{album_name}/{mp4_name}"
-        fps: int = cfg["variable"]["frames_per_second"]
+        fps: int = cfg["server_settings"]["frames_per_second"]
 
         video_file = createVideo(input_pattern, output_file, fps)
 
