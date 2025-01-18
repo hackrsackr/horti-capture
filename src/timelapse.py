@@ -70,12 +70,12 @@ def takePictures(cfg: object, timestamp: str) -> None:
     """Take Pictures for timelapse series"""
     # cfg = loadConfig()
 
-    output_dir: str = cfg['video_settings']["output_folder"]
+    output_dir: str = cfg["video_settings"]["output_folder"]
     photos: int = int(cfg["server_settings"]["number_of_photos"])
     photo_delay: int = int(cfg["server_settings"]["secs_between_photos"])
-    show_preview: bool = cfg['general_settings']["show_preview"]
+    show_preview: bool = cfg["general_settings"]["show_preview"]
 
-    picam2: Picamera2 = Picamera2(tuning=Picamera2.load_tuning_file("imx477.json"))
+    picam2: Picamera2 = Picamera2(tuning=Picamera2.load_tuning_file("imx477_noir.json"))
     config: dict = picam2.create_preview_configuration(main={"size": (800, 600)})
     preview: Preview = Preview.QT if show_preview else Preview.NULL
 
